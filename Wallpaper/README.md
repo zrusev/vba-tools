@@ -1,0 +1,1 @@
+Change the wallpaper by rewritting directry the registry value
