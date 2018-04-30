@@ -42,7 +42,7 @@ Sub PictureDir()
 Dim dskPath As String
 
 With Application.FileDialog(msoFileDialogFilePicker)
-    .Title = "Select the previous report:"
+    .Title = "Select image"
     .InitialFileName = GetDesktop
     .Show
     
