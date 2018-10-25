@@ -68,8 +68,8 @@ End Sub
 
 Public Sub ClearTable()
 Dim wb As Workbook: Set wb = ThisWorkbook
-Dim ws As Worksheet: Set ws = wb.Sheets("Settings")
-Dim rawDataTbl As ListObject: Set rawDataTbl = ws.ListObjects("Table1")
+Dim ws As Worksheet: Set ws = wb.Sheets("Data")
+Dim rawDataTbl As ListObject: Set rawDataTbl = ws.ListObjects(1)
 
 With rawDataTbl
     If Not .DataBodyRange Is Nothing Then

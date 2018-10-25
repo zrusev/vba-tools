@@ -24,9 +24,9 @@ Private Sub FillTableBodyRowColor(tbl As ListObject, rw As Long): tbl.DataBodyRa
 
 Public Sub Execution()
 Dim wb As Workbook: Set wb = ThisWorkbook
-Dim wsSettings As Worksheet: Set wsSettings = wb.Sheets(1)
-Dim wsData As Worksheet: Set wsData = wb.Sheets(2)
-Dim tbl As ListObject: Set tbl = wsSettings.ListObjects(1)
+Dim wsSettings As Worksheet: Set wsSettings = wb.Sheets("Settings")
+Dim wsData As Worksheet: Set wsData = wb.Sheets("Data")
+Dim tbl As ListObject: Set tbl = wsSettings.ListObjects("Table2")
 Dim rawDataTbl As ListObject: Set rawDataTbl = wsData.ListObjects(1) 'Ignore table's name
 
 Dim rw As Object

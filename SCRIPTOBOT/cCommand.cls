@@ -29,12 +29,21 @@ Set MethodsLibrary = New Dictionary
 
 With MethodsLibrary
     .CompareMode = TextCompare
-    .Add "Left Click", "LeftClick"
-    .Add "Right Click", "RightClick"
+    '.Add "Left Click", "LeftClick"
+    .Add "Left Click", "SimulatorLeftClick" 'public void SendLeftButtonDoubleClick()
+    .Add "Left Double Click", "SimulatorDoubleLeftClick" 'public void SendLeftButtonDoubleClick()
+    '.Add "Right Click", "RightClick"
+    .Add "Right Click", "SimulatorRightClick" 'public void SendRightButtonClick()
+    .Add "Right Double Click", "SimulatorRightDoubleClick" 'public void SendRightButtonDoubleClick()
     .Add "Set Position", "SetCursorPosition"
-    .Add "Send Keys", "SendKeyboardCombination"
+    .Add "Send Key", "SimulatorSendKey" 'public void SendKey(string textEntry)
+    '.Add "Send Keys", "SendKeyboardCombination"
+    .Add "Send Keys", "SimulatorSendKeyboardCombination" 'public void SendKeystrokes(string key, string[] keysEntry)
+    .Add "Send Special Keys", "VirtualInputSendSpecialKeystrokes"  'public void SendSpecialKeystrokes(string[] keysEntry)
+    .Add "Send Text", "SimulatorSendText" 'public void SendText(string textEntry)
+    .Add "Send Numbers", "SendNumbers"
     .Add "Copy Text", "PutInClipboard"
-    .Add "Paste Text", "SendKeystrokes"
+    .Add "Paste Text", "SendKeys"
     .Add "Sleep", "Sleep"
     '.Add "Compare Images", "CompareImages" 'public Boolean CompareImages(Bitmap image, string targetImage, double compareLevel, float similarityThreshold, string filepath = DefaultSaveToPath)
     .Add "Capture Desktop", "CaptureDesktop" 'public Bitmap CaptureDesktop()
@@ -80,6 +89,19 @@ End Function
 
 Public Function ClientScreen(hWks As Long) As Long: ClientScreen = ClientToScreen(hWks, pPOINTAPI): End Function
 
+Public Function SimulatorLeftClick(parameters As Variant) As Long
+Dim counter As Integer: counter = CInt(parameters(0))
+
+Dim i As Integer
+For i = 0 To counter - 1
+    iContainer.clWrapper.SendLeftButtonClick
+Next i
+
+SimulatorLeftClick = 1
+End Function
+
+Public Function SimulatorDoubleLeftClick(parameters As Variant) As Long: iContainer.clWrapper.SendLeftButtonDoubleClick: SimulatorDoubleLeftClick = 1: End Function
+
 Public Function LeftClick(parameters As Variant) As Long
 mCommand.iType = INPUT_MOUSE
 
@@ -93,6 +115,19 @@ For i = 1 To CInt(parameters(0))
 Next i
 End Function
 
+Public Function SimulatorRightClick(parameters As Variant) As Long
+Dim counter As Integer: counter = CInt(parameters(0))
+
+Dim i As Integer
+For i = 0 To counter - 1
+    iContainer.clWrapper.SendRightButtonClick
+Next i
+
+SimulatorRightClick = 1
+End Function
+
+Public Function SimulatorRightDoubleClick(parameters As Variant) As Long: iContainer.clWrapper.SendRightButtonDoubleClick: SimulatorRightDoubleClick = 1: End Function
+
 Public Function RightClick(parameters As Variant) As Long
 mCommand.iType = INPUT_MOUSE
 
@@ -104,6 +139,34 @@ For i = 1 To CInt(parameters(0))
     mCommand.iFlags = MOUSEEVENTF_RIGHTUP
     RightClick = SendInput(1&, mCommand, Len(mCommand))
 Next i
+End Function
+
+Public Function SimulatorSendKeyboardCombination(parameters As Variant) As Long
+Dim primaryKey As String: primaryKey = UCase(CStr(parameters(0)))
+
+Dim strArr() As String: ReDim strArr(UBound(parameters) - 1)
+
+Dim i As Integer
+For i = 0 To UBound(strArr)
+  strArr(i) = parameters(i + 1)
+Next i
+
+iContainer.clWrapper.SendKeystrokes primaryKey, strArr
+
+SimulatorSendKeyboardCombination = 1
+End Function
+
+Public Function VirtualInputSendSpecialKeystrokes(parameters As Variant) As Long
+Dim strArr() As String: ReDim strArr(UBound(parameters))
+
+Dim i As Integer
+For i = 0 To UBound(strArr)
+  strArr(i) = parameters(i)
+Next i
+
+iContainer.clWrapper.SendSpecialKeystrokes strArr
+
+VirtualInputSendSpecialKeystrokes = 1
 End Function
 
 Public Function SendKeyboardCombination(parameters As Variant) As Long
@@ -150,6 +213,8 @@ End Function
 
 Public Function Sleep(parameters As Variant) As Integer: Wait CInt(parameters(0)): Sleep = 1: End Function
 
+Public Function SimulatorSendText(parameters As Variant) As Long: iContainer.clWrapper.SendText CStr(parameters(0)): SimulatorSendText = 1: End Function
+
 Public Function PutInClipboard(parameters As Variant) As Long
 Dim MyDataObj As New DataObject
 
@@ -159,7 +224,25 @@ MyDataObj.PutInClipboard
 PutInClipboard = 1
 End Function
 
-Public Function SendKeystrokes(parameters As Variant) As Integer: Application.SendKeys "^v": SendKeystrokes = 1: End Function
+Public Function SimulatorSendKey(parameters As Variant) As Long: iContainer.clWrapper.SendKey UCase(CStr(parameters(0))): SimulatorSendKey = 1: End Function
+
+Public Function SendKeys(parameters As Variant) As Integer: Application.SendKeys "^v": SendKeys = 1: End Function
+
+Public Function SendNumbers(parameters As Variant) As Long
+Dim buff() As String: ReDim buff(Len(parameters(0)) - 1)
+
+Dim i As Integer
+For i = 1 To Len(parameters(0))
+    buff(i - 1) = Mid$(parameters(0), i, 1)
+Next
+
+Dim el As Variant
+For Each el In buff
+    iContainer.clWrapper.SendKey "VK_" & UCase(CStr(el))
+Next el
+
+SendNumbers = 1
+End Function
 
 Public Function CaptureDesktop(parameters As Variant) As Boolean
 Dim sWindow As Object: Set sWindow = iContainer.clWrapper.CaptureDesktop
